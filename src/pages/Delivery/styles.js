@@ -29,15 +29,40 @@ export const Action = styled.div`
   align-items: center;
 `;
 
+export const SearchBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  div + button {
+    color: ${whiteColor};
+    background: ${primaryColor};
+    height: 36px;
+    width: 36px;
+    margin: 5px 0 0;
+    border: 0;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s;
+
+    &:hover {
+      background: ${darken(0.03, primaryColor)};
+    }
+  }
+`;
+
 export const Input = styled.div`
   position: relative;
+  height: 36px;
+  margin-right: 5px;
 
   input {
     color: ${blackColor};
     background: ${whiteColor};
     height: 36px;
     margin: 0 0 10px;
-    padding: 0 25px 0 36px;
+    padding: 0 25px 0 10px;
     border: 1px solid ${borderColor};
     border-radius: 4px;
 
@@ -54,14 +79,6 @@ export const Input = styled.div`
     background: none;
     border: 0;
   }
-`;
-
-export const SeachIcon = styled(MdSearch)`
-  position: absolute;
-  font-size: 20px;
-  top: 8px;
-  left: 10px;
-  color: ${placeholderColor};
 `;
 
 export const Button = styled.button`

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { MdRemoveRedEye, MdEdit, MdDeleteForever } from 'react-icons/md';
 
-import { Container, Badge, NotificationList, Notification } from './styles';
+import { Container, Badge, ActionList, Action } from './styles';
 import { primaryColor, blueColor, dangerColor } from '~/styles/colors';
 
 export default function Actions() {
@@ -23,7 +23,7 @@ export default function Actions() {
   ]);
 
   const hasUnread = useMemo(
-    () => !!actions.find(notification => notification.read === false),
+    () => !!actions.find(action => action.read === false),
     [actions]
   );
 
@@ -35,17 +35,17 @@ export default function Actions() {
     <Container>
       <Badge onClick={handleToggleVisible} hasUnread={hasUnread}>
         ...
-        <NotificationList visible={visible}>
-          {actions.map(action => (
-            <Notification key={action.content} color={action.color}>
-              <button type="button">
-                <action.icon />
-                <span>{action.content}</span>
-              </button>
-            </Notification>
-          ))}
-        </NotificationList>
       </Badge>
+      <ActionList visible={visible}>
+        {actions.map(action => (
+          <Action key={action.content} color={action.color}>
+            <button type="button">
+              <action.icon />
+              <span>{action.content}</span>
+            </button>
+          </Action>
+        ))}
+      </ActionList>
     </Container>
   );
 }

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import { darken } from 'polished';
 
 import { placeholderColor, whiteColor, borderColor } from '~/styles/colors';
 
 export const Container = styled.div`
   position: relative;
+  margin-left: auto;
+  max-width: 35px;
 `;
 
 export const Badge = styled.button`
@@ -17,7 +18,7 @@ export const Badge = styled.button`
   padding: 0 7px 13px;
 `;
 
-export const NotificationList = styled.div`
+export const ActionList = styled.div`
   z-index: 100;
   position: absolute;
   width: 150px;
@@ -54,7 +55,7 @@ export const NotificationList = styled.div`
   }
 `;
 
-export const Notification = styled.div`
+export const Action = styled.div`
   color: ${whiteColor};
 
   & + div {
