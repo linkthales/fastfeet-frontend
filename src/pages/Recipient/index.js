@@ -18,28 +18,23 @@ import {
 
 const headers = [
   { key: 'id', name: 'ID' },
-  { key: 'recipient.name', name: 'Destinatário' },
-  { key: 'product', name: 'Produto' },
-  { key: 'deliveryman.avatar.url', type: 'image', name: '' },
-  { key: 'deliveryman.name', name: 'Entregador' },
-  { key: 'recipient.city', name: 'Cidade' },
-  { key: 'recipient.state', name: 'Estado' },
-  { key: 'recipient.street', name: 'Status' },
+  { key: 'name', name: 'Nome' },
+  { key: 'full_address', name: 'Endereço' },
 ];
 
-export default function Delivery() {
+export default function Recipient() {
   const formRef = useRef(null);
-  const [deliveries, setDeliveries] = useState([]);
+  const [recipients, setRecipients] = useState([]);
   const [searchContext, setSearchContext] = useState('');
 
-  async function getDeliveries(search) {
-    const response = await api.get(`/manage-deliveries?q=${search}`);
+  async function getRecipients(search) {
+    const response = await api.get(`/manage-recipients?q=${search}`);
 
-    setDeliveries(response.data);
+    setRecipients(response.data);
   }
 
   useEffect(() => {
-    getDeliveries(searchContext);
+    getRecipients(searchContext);
   }, [searchContext]);
 
   function handleSubmit({ search }) {
@@ -48,12 +43,12 @@ export default function Delivery() {
 
   return (
     <Container>
-      <Title>Gerenciando encomendas</Title>
+      <Title>Gerenciando destinatários</Title>
       <Action>
         <SearchBox>
           <StyledInput>
             <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="search" placeholder="Buscar por encomendas" />
+              <Input name="search" placeholder="Buscar por destinatários" />
               <button
                 type="button"
                 onClick={() => {
@@ -73,7 +68,7 @@ export default function Delivery() {
           <MdAdd /> Cadastrar
         </Button>
       </Action>
-      <Table headers={headers} rows={deliveries} />
+      <Table headers={headers} rows={recipients} />
     </Container>
   );
 }

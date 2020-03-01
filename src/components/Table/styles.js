@@ -40,5 +40,11 @@ export const Row = styled.tr`
       text-align: right;
       padding-right: 25px;
     }
+
+    img {
+      height: 35px;
+      width: 35px;
+      border-radius: 50%;
+    }
   }
 `;

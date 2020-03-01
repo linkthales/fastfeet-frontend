@@ -18,28 +18,24 @@ import {
 
 const headers = [
   { key: 'id', name: 'ID' },
-  { key: 'recipient.name', name: 'Destinatário' },
-  { key: 'product', name: 'Produto' },
-  { key: 'deliveryman.avatar.url', type: 'image', name: '' },
-  { key: 'deliveryman.name', name: 'Entregador' },
-  { key: 'recipient.city', name: 'Cidade' },
-  { key: 'recipient.state', name: 'Estado' },
-  { key: 'recipient.street', name: 'Status' },
+  { key: 'avatar.url', type: 'image', name: 'Foto' },
+  { key: 'name', name: 'Nome' },
+  { key: 'email', name: 'Email' },
 ];
 
-export default function Delivery() {
+export default function Deliveryman() {
   const formRef = useRef(null);
-  const [deliveries, setDeliveries] = useState([]);
+  const [deliverymans, setDeliverymans] = useState([]);
   const [searchContext, setSearchContext] = useState('');
 
-  async function getDeliveries(search) {
-    const response = await api.get(`/manage-deliveries?q=${search}`);
+  async function getDeliverymans(search) {
+    const response = await api.get(`/manage-deliverymans?q=${search}`);
 
-    setDeliveries(response.data);
+    setDeliverymans(response.data);
   }
 
   useEffect(() => {
-    getDeliveries(searchContext);
+    getDeliverymans(searchContext);
   }, [searchContext]);
 
   function handleSubmit({ search }) {
@@ -48,12 +44,12 @@ export default function Delivery() {
 
   return (
     <Container>
-      <Title>Gerenciando encomendas</Title>
+      <Title>Gerenciando entregadores</Title>
       <Action>
         <SearchBox>
           <StyledInput>
             <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="search" placeholder="Buscar por encomendas" />
+              <Input name="search" placeholder="Buscar por entregadores" />
               <button
                 type="button"
                 onClick={() => {
@@ -73,7 +69,7 @@ export default function Delivery() {
           <MdAdd /> Cadastrar
         </Button>
       </Action>
-      <Table headers={headers} rows={deliveries} />
+      <Table headers={headers} rows={deliverymans} />
     </Container>
   );
 }

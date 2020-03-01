@@ -20,6 +20,8 @@ export default function Table({ headers, rows }) {
       return objectFirstKey[joinedKeys];
     }
 
+    // if (Array.isArray(object[key])) return object[key];
+
     return object[key];
   }
 
@@ -37,7 +39,18 @@ export default function Table({ headers, rows }) {
         {rows.map(row => (
           <Row key={row.id}>
             {headers.map(header => (
-              <td key={header.key}>{getObjectProperty(header.key, row)}</td>
+              <td key={header.key}>
+                {header.type === 'image' ? (
+                  <>
+                    <img
+                      src={getObjectProperty(header.key, row)}
+                      alt={header.key}
+                    />
+                  </>
+                ) : (
+                  getObjectProperty(header.key, row)
+                )}
+              </td>
             ))}
             <td>
               <Actions />

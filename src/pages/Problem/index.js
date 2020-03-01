@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MdClose, MdAdd, MdSearch } from 'react-icons/md';
+import { MdClose, MdSearch } from 'react-icons/md';
 import { Form } from '@unform/web';
 
 import api from '~/services/api';
@@ -7,39 +7,29 @@ import api from '~/services/api';
 import Table from '~/components/Table';
 import Input from '~/components/Input';
 
-import {
-  Container,
-  Title,
-  Action,
-  SearchBox,
-  StyledInput,
-  Button,
-} from './styles';
+import { Container, Title, Action, SearchBox, StyledInput } from './styles';
 
 const headers = [
-  { key: 'id', name: 'ID' },
-  { key: 'recipient.name', name: 'Destinatário' },
+  { key: 'id', name: 'Encomenda' },
   { key: 'product', name: 'Produto' },
-  { key: 'deliveryman.avatar.url', type: 'image', name: '' },
-  { key: 'deliveryman.name', name: 'Entregador' },
-  { key: 'recipient.city', name: 'Cidade' },
-  { key: 'recipient.state', name: 'Estado' },
-  { key: 'recipient.street', name: 'Status' },
+  { key: 'last_problem.description', type: 'problem', name: 'Problema' },
 ];
 
-export default function Delivery() {
+export default function Problem() {
   const formRef = useRef(null);
-  const [deliveries, setDeliveries] = useState([]);
+  const [deliveryProblems, setDeliveryProblems] = useState([]);
   const [searchContext, setSearchContext] = useState('');
 
-  async function getDeliveries(search) {
-    const response = await api.get(`/manage-deliveries?q=${search}`);
+  async function getDeliveryProblems(search) {
+    const response = await api.get(
+      `/manage-deliveries?q=${search}&onlyWithProblem=true`
+    );
 
-    setDeliveries(response.data);
+    setDeliveryProblems(response.data);
   }
 
   useEffect(() => {
-    getDeliveries(searchContext);
+    getDeliveryProblems(searchContext);
   }, [searchContext]);
 
   function handleSubmit({ search }) {
@@ -48,12 +38,12 @@ export default function Delivery() {
 
   return (
     <Container>
-      <Title>Gerenciando encomendas</Title>
+      <Title>Problemas na entrega</Title>
       <Action>
         <SearchBox>
           <StyledInput>
             <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="search" placeholder="Buscar por encomendas" />
+              <Input name="search" placeholder="Buscar por encomenda" />
               <button
                 type="button"
                 onClick={() => {
@@ -69,11 +59,8 @@ export default function Delivery() {
             </Form>
           </StyledInput>
         </SearchBox>
-        <Button type="button">
-          <MdAdd /> Cadastrar
-        </Button>
       </Action>
-      <Table headers={headers} rows={deliveries} />
+      <Table headers={headers} rows={deliveryProblems} />
     </Container>
   );
 }

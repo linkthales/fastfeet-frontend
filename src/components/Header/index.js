@@ -10,7 +10,7 @@ import { Container, Content, Profile, CustomLink } from './styles';
 export default function Header() {
   const dispatch = useDispatch();
   const profile = useSelector(state => state.user.profile);
-  const lulu = 'true';
+  const lulu = null;
 
   function handleSignOut() {
     dispatch(signOut());
@@ -21,12 +21,18 @@ export default function Header() {
       <Content>
         <nav>
           <img src={logo} alt="FastFeet" />
-          <CustomLink path={lulu} to="/Delivery">
+          <CustomLink path={lulu} to="/delivery">
             ENCOMENDAS
           </CustomLink>
-          <CustomLink to="/lulu">ENTREGADORES</CustomLink>
-          <CustomLink to="/Delivery">DESTINATÁRIOS</CustomLink>
-          <CustomLink to="/Delivery">PROBLEMAS</CustomLink>
+          <CustomLink path={lulu} to="/deliveryman">
+            ENTREGADORES
+          </CustomLink>
+          <CustomLink path={lulu} to="/recipient">
+            DESTINATÁRIOS
+          </CustomLink>
+          <CustomLink path={lulu} to="/problem">
+            PROBLEMAS
+          </CustomLink>
         </nav>
         <aside>
           <Profile>

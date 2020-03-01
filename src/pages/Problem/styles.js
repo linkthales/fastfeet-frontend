@@ -79,20 +79,3 @@ export const StyledInput = styled.div`
     border: 0;
   }
 `;
-
-export const Button = styled.button`
-  color: ${whiteColor};
-  background: ${primaryColor};
-  height: 36px;
-  width: 142px;
-  margin: 5px 0 0;
-  border: 0;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  transition: background 0.2s;
-
-  &:hover {
-    background: ${darken(0.03, primaryColor)};
-  }
-`;
