@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Actions from '~/components/Actions';
 import { Container, Header, Row } from './styles';
 
-export default function Table({ headers, rows }) {
+export default function Table({ headers, rows, actions }) {
   function getObjectProperty(key, object) {
     if (key.includes('.')) {
       const [firstKey, ...restOfKeys] = key.split(/\./);
@@ -48,12 +48,12 @@ export default function Table({ headers, rows }) {
                     />
                   </>
                 ) : (
-                  getObjectProperty(header.key, row)
+                  <p>{getObjectProperty(header.key, row)}</p>
                 )}
               </td>
             ))}
             <td>
-              <Actions />
+              <Actions rowId={row.id} actions={actions} />
             </td>
           </Row>
         ))}
@@ -65,4 +65,5 @@ export default function Table({ headers, rows }) {
 Table.propTypes = {
   headers: PropTypes.arrayOf(PropTypes.object).isRequired,
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
+  actions: PropTypes.arrayOf(PropTypes.object).isRequired,
 };

@@ -1,31 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { MdRemoveRedEye, MdEdit, MdDeleteForever } from 'react-icons/md';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Container, Badge, ActionList, Action } from './styles';
-import { primaryColor, blueColor, dangerColor } from '~/styles/colors';
 
-export default function Actions() {
+export default function Actions({ rowId, actions }) {
   const [visible, setVisible] = useState(false);
-  const [actions, setActions] = useState([
-    {
-      read: true,
-      content: 'Visualizar',
-      icon: MdRemoveRedEye,
-      color: primaryColor,
-    },
-    { read: true, content: 'Editar', icon: MdEdit, color: blueColor },
-    {
-      read: true,
-      content: 'Excluir',
-      icon: MdDeleteForever,
-      color: dangerColor,
-    },
-  ]);
-
-  const hasUnread = useMemo(
-    () => !!actions.find(action => action.read === false),
-    [actions]
-  );
 
   function handleToggleVisible() {
     setVisible(!visible);
@@ -33,13 +12,17 @@ export default function Actions() {
 
   return (
     <Container>
-      <Badge onClick={handleToggleVisible} hasUnread={hasUnread}>
-        ...
-      </Badge>
+      <Badge onClick={handleToggleVisible}>...</Badge>
       <ActionList visible={visible}>
         {actions.map(action => (
           <Action key={action.content} color={action.color}>
-            <button type="button">
+            <button
+              type="button"
+              onClick={() => {
+                setVisible(!visible);
+                action.execute(rowId);
+              }}
+            >
               <action.icon />
               <span>{action.content}</span>
             </button>
@@ -49,3 +32,8 @@ export default function Actions() {
     </Container>
   );
 }
+
+Actions.propTypes = {
+  rowId: PropTypes.number.isRequired,
+  actions: PropTypes.arrayOf(PropTypes.object).isRequired,
+};

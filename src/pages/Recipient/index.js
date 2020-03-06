@@ -1,6 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MdClose, MdAdd, MdSearch } from 'react-icons/md';
+import {
+  MdClose,
+  MdAdd,
+  MdSearch,
+  MdEdit,
+  MdDeleteForever,
+} from 'react-icons/md';
 import { Form } from '@unform/web';
+import PropTypes from 'prop-types';
 
 import api from '~/services/api';
 
@@ -15,6 +22,7 @@ import {
   StyledInput,
   Button,
 } from './styles';
+import { blueColor, dangerColor } from '~/styles/colors';
 
 const headers = [
   { key: 'id', name: 'ID' },
@@ -22,7 +30,7 @@ const headers = [
   { key: 'full_address', name: 'Endereço' },
 ];
 
-export default function Recipient() {
+export default function Recipient({ history }) {
   const formRef = useRef(null);
   const [recipients, setRecipients] = useState([]);
   const [searchContext, setSearchContext] = useState('');
@@ -33,6 +41,18 @@ export default function Recipient() {
     setRecipients(response.data);
   }
 
+  async function deleteRecipient(recipientId) {
+    if (
+      window.confirm(
+        `Tem certeza que deseja excluir o destinatário de id ${recipientId}?`
+      )
+    ) {
+      await api.delete(`/manage-recipients/${recipientId}`);
+
+      getRecipients(searchContext);
+    }
+  }
+
   useEffect(() => {
     getRecipients(searchContext);
   }, [searchContext]);
@@ -40,6 +60,29 @@ export default function Recipient() {
   function handleSubmit({ search }) {
     setSearchContext(search);
   }
+
+  function handleNewRecipient() {
+    history.push('/recipient/0');
+  }
+
+  const actions = [
+    {
+      content: 'Editar',
+      icon: MdEdit,
+      color: blueColor,
+      execute: recipientId => {
+        history.push(`/recipient/${recipientId}`);
+      },
+    },
+    {
+      content: 'Excluir',
+      icon: MdDeleteForever,
+      color: dangerColor,
+      execute: recipientId => {
+        deleteRecipient(recipientId);
+      },
+    },
+  ];
 
   return (
     <Container>
@@ -59,16 +102,20 @@ export default function Recipient() {
                 <MdClose />
               </button>
               <button type="submit">
-                <MdSearch />
+                <MdSearch size={20} />
               </button>
             </Form>
           </StyledInput>
         </SearchBox>
-        <Button type="button">
-          <MdAdd /> Cadastrar
+        <Button type="button" onClick={handleNewRecipient}>
+          <MdAdd size={24} /> Cadastrar
         </Button>
       </Action>
-      <Table headers={headers} rows={recipients} />
+      <Table headers={headers} rows={recipients} actions={actions} />
     </Container>
   );
 }
+
+Recipient.propTypes = {
+  history: PropTypes.object.isRequired,
+};

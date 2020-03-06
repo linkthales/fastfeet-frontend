@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import logo from '~/assets/logo.svg';
 
@@ -7,10 +8,9 @@ import { signOut } from '~/store/modules/auth/actions';
 
 import { Container, Content, Profile, CustomLink } from './styles';
 
-export default function Header() {
+export default function Header({ location: { pathname } }) {
   const dispatch = useDispatch();
   const profile = useSelector(state => state.user.profile);
-  const lulu = null;
 
   function handleSignOut() {
     dispatch(signOut());
@@ -21,16 +21,28 @@ export default function Header() {
       <Content>
         <nav>
           <img src={logo} alt="FastFeet" />
-          <CustomLink path={lulu} to="/delivery">
+          <CustomLink
+            path={{ highlight: pathname.split('/')[1] === 'delivery' }}
+            to="/delivery"
+          >
             ENCOMENDAS
           </CustomLink>
-          <CustomLink path={lulu} to="/deliveryman">
+          <CustomLink
+            path={{ highlight: pathname.split('/')[1] === 'deliveryman' }}
+            to="/deliveryman"
+          >
             ENTREGADORES
           </CustomLink>
-          <CustomLink path={lulu} to="/recipient">
+          <CustomLink
+            path={{ highlight: pathname.split('/')[1] === 'recipient' }}
+            to="/recipient"
+          >
             DESTINATÁRIOS
           </CustomLink>
-          <CustomLink path={lulu} to="/problem">
+          <CustomLink
+            path={{ highlight: pathname.split('/')[1] === 'problem' }}
+            to="/problem"
+          >
             PROBLEMAS
           </CustomLink>
         </nav>
@@ -53,3 +65,7 @@ export default function Header() {
     </Container>
   );
 }
+
+Header.propTypes = {
+  location: PropTypes.object.isRequired,
+};

@@ -11,5 +11,6 @@ export const placeholderColor = '#999';
 export const lightGrayColor = '#666';
 export const grayColor = '#444';
 export const darkColor = '#333';
+export const backdropColor = '#00000099';
 export const darkGrayColor = '#00000033';
 export const blackColor = '#000';

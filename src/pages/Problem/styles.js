@@ -8,7 +8,34 @@ import {
   placeholderColor,
   borderColor,
   primaryColor,
+  lightGrayColor,
 } from '~/styles/colors';
+
+export const BackdropContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 300px;
+
+  h3 {
+    font-size: 14px;
+    color: ${grayColor};
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 16px;
+    max-width: 450px;
+    color: ${lightGrayColor};
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 400px;
+    max-height: 200px;
+  }
+`;
 
 export const Container = styled.div`
   max-width: 100%;

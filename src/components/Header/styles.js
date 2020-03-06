@@ -12,7 +12,7 @@ import {
 } from '~/styles/colors';
 
 export const CustomLink = styled(Link)`
-  color: ${props => (props.path ? grayColor : placeholderColor)};
+  color: ${props => (props.path.highlight ? grayColor : placeholderColor)};
   font-weight: bold;
   margin-right: 20px;
 `;

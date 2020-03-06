@@ -5,10 +5,10 @@ import Header from '~/components/Header';
 
 import { Wrapper, Body } from './styles';
 
-export default function DefaultLayout({ children }) {
+export default function DefaultLayout({ children, location }) {
   return (
     <Wrapper>
-      <Header />
+      <Header location={location} />
       <Body>{children}</Body>
     </Wrapper>
   );
@@ -16,4 +16,5 @@ export default function DefaultLayout({ children }) {
 
 DefaultLayout.propTypes = {
   children: PropTypes.element.isRequired,
+  location: PropTypes.object.isRequired,
 };

@@ -32,6 +32,13 @@ export const Row = styled.tr`
     background: ${whiteColor};
     height: 57px;
 
+    p {
+      max-width: 850px;
+      white-space: nowrap;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+    }
+
     &:first-child {
       padding-left: 25px;
     }

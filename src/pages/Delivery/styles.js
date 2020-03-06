@@ -8,7 +8,33 @@ import {
   placeholderColor,
   borderColor,
   primaryColor,
+  lightGrayColor,
 } from '~/styles/colors';
+
+export const BackdropContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 300px;
+
+  h3 {
+    font-size: 14px;
+    color: ${grayColor};
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 16px;
+    color: ${lightGrayColor};
+    margin-bottom: 10px;
+  }
+
+  img {
+    max-width: 400px;
+    max-height: 200px;
+  }
+`;
 
 export const Container = styled.div`
   max-width: 100%;
@@ -81,6 +107,10 @@ export const StyledInput = styled.div`
 `;
 
 export const Button = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   color: ${whiteColor};
   background: ${primaryColor};
   height: 36px;
