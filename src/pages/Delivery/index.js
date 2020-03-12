@@ -42,10 +42,15 @@ export default function Delivery({ history }) {
   const [deliveries, setDeliveries] = useState([]);
   const [searchContext, setSearchContext] = useState('');
   const [currentDelivery, setCurrentDelivery] = useState({});
+  const [problemFlag, setProblemFlag] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
   async function getDeliveries(search) {
-    const response = await api.get(`/manage-deliveries?q=${search}`);
+    const response = await api.get(
+      `/manage-deliveries?q=${search}${
+        problemFlag ? '&onlyWithProblem=true' : ''
+      }`
+    );
 
     setDeliveries(response.data);
   }
@@ -64,7 +69,7 @@ export default function Delivery({ history }) {
 
   useEffect(() => {
     getDeliveries(searchContext);
-  }, [searchContext]);
+  }, [searchContext, problemFlag]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -169,6 +174,16 @@ export default function Delivery({ history }) {
                 </button>
               </Form>
             </StyledInput>
+            <label>
+              <input
+                type="checkbox"
+                checked={problemFlag}
+                onChange={() => {
+                  setProblemFlag(!problemFlag);
+                }}
+              />
+              <span>Apenas com problemas na entrega</span>
+            </label>
           </SearchBox>
           <Button type="button" onClick={handleNewDelivery}>
             <MdAdd size={24} /> Cadastrar

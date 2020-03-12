@@ -45,7 +45,9 @@ export default function ManageDeliveries({
         street_number: Yup.number().required('O número da rua é obrigatório'),
         city: Yup.string().required('A cidade é obrigatória'),
         state: Yup.string().required('O estado é obrigatório'),
-        zip_code: Yup.string().required('O CEP é obrigatório'),
+        zip_code: Yup.string()
+          .matches(/^\d{5}\-\d{3}$/, 'O cep deve ter o formato 99999-999')
+          .required('O CEP é obrigatório'),
       });
       await schema.validate(data, {
         abortEarly: false,
@@ -67,7 +69,9 @@ export default function ManageDeliveries({
         return formRef.current.setErrors(validationErrors);
       }
 
-      return toast.error('.');
+      const errorObject = JSON.parse(err.request.response);
+
+      return toast.error(errorObject.error);
     }
   }
 
@@ -133,7 +137,11 @@ export default function ManageDeliveries({
             </div>
             <div>
               <span>CEP</span>
-              <Input name="zip_code" placeholder="009960-580" />
+              <Input
+                name="zip_code"
+                placeholder="009960-580"
+                mask="99999-999"
+              />
             </div>
           </Row>
         </FormContainer>

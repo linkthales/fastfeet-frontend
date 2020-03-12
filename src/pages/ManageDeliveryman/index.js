@@ -55,7 +55,9 @@ export default function ManageDeliveryman({
         return formRef.current.setErrors(validationErrors);
       }
 
-      return toast.error('Entregador com este e-mail já está cadastrado.');
+      const errorObject = JSON.parse(err.request.response);
+
+      return toast.error(errorObject);
     }
   }
 

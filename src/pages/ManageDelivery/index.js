@@ -35,7 +35,6 @@ export default function ManageDelivery({
   const [deliverymans, setDeliverymans] = useState([]);
 
   async function handleSubmit(data) {
-    console.log(data);
     try {
       formRef.current.setErrors({});
 
@@ -64,7 +63,9 @@ export default function ManageDelivery({
         return formRef.current.setErrors(validationErrors);
       }
 
-      return toast.error('Falha ao cadastrar encomenda.');
+      const errorObject = JSON.parse(err.request.response);
+
+      return toast.error(errorObject);
     }
   }
 

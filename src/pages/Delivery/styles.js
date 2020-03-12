@@ -75,6 +75,19 @@ export const SearchBox = styled.div`
       background: ${darken(0.03, primaryColor)};
     }
   }
+
+  label {
+    margin-left: 50px;
+    cursor: pointer;
+
+    input {
+      cursor: pointer;
+    }
+
+    span {
+      margin-left: 5px;
+    }
+  }
 `;
 
 export const StyledInput = styled.div`
