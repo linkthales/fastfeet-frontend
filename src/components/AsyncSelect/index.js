@@ -80,6 +80,7 @@ export default function AsyncSelect({
           onChange(newValue);
         }}
         ref={ref}
+        noOptionsMessage={() => 'Nenhum resultado encontrado'}
         loadingMessage={() => 'Carregando...'}
         {...rest}
       />

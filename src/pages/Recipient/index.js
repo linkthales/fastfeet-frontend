@@ -23,6 +23,7 @@ import {
   Button,
 } from './styles';
 import { blueColor, dangerColor } from '~/styles/colors';
+import Pager from '~/components/Pager';
 
 const headers = [
   { key: 'id', name: 'ID' },
@@ -32,13 +33,20 @@ const headers = [
 
 export default function Recipient({ history }) {
   const formRef = useRef(null);
+  const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [recipients, setRecipients] = useState([]);
   const [searchContext, setSearchContext] = useState('');
 
   async function getRecipients(search) {
-    const response = await api.get(`/manage-recipients?q=${search}`);
+    const response = await api.get(
+      `/manage-recipients?q=${search}&page=${currentPage}`
+    );
 
-    setRecipients(response.data);
+    const { pages, recipients } = response.data;
+
+    setPages(pages);
+    setRecipients(recipients);
   }
 
   async function deleteRecipient(recipientId) {
@@ -54,8 +62,13 @@ export default function Recipient({ history }) {
   }
 
   useEffect(() => {
+    setCurrentPage(1);
     getRecipients(searchContext);
   }, [searchContext]);
+
+  useEffect(() => {
+    getRecipients(searchContext);
+  }, [currentPage]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -86,32 +99,41 @@ export default function Recipient({ history }) {
 
   return (
     <Container>
-      <Title>Gerenciando destinatários</Title>
-      <Action>
-        <SearchBox>
-          <StyledInput>
-            <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="search" placeholder="Buscar por destinatários" />
-              <button
-                type="button"
-                onClick={() => {
-                  formRef.current.reset();
-                  setSearchContext('');
-                }}
-              >
-                <MdClose />
-              </button>
-              <button type="submit">
-                <MdSearch size={20} />
-              </button>
-            </Form>
-          </StyledInput>
-        </SearchBox>
-        <Button type="button" onClick={handleNewRecipient}>
-          <MdAdd size={24} /> Cadastrar
-        </Button>
-      </Action>
-      <Table headers={headers} rows={recipients} actions={actions} />
+      <div>
+        <Title>Gerenciando destinatários</Title>
+        <Action>
+          <SearchBox>
+            <StyledInput>
+              <Form ref={formRef} onSubmit={handleSubmit}>
+                <Input name="search" placeholder="Buscar por destinatários" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    formRef.current.reset();
+                    setSearchContext('');
+                  }}
+                >
+                  <MdClose />
+                </button>
+                <button type="submit">
+                  <MdSearch size={20} />
+                </button>
+              </Form>
+            </StyledInput>
+          </SearchBox>
+          <Button type="button" onClick={handleNewRecipient}>
+            <MdAdd size={24} /> Cadastrar
+          </Button>
+        </Action>
+        <Table headers={headers} rows={recipients} actions={actions} />
+      </div>
+      {pages && (
+        <Pager
+          maxPages={pages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
     </Container>
   );
 }

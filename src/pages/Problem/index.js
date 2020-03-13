@@ -22,6 +22,7 @@ import {
 } from './styles';
 import { blueColor, dangerColor } from '~/styles/colors';
 import Backdrop from '../_layouts/backdrop';
+import Pager from '~/components/Pager';
 
 const headers = [
   { key: 'id', name: 'Encomenda' },
@@ -31,6 +32,8 @@ const headers = [
 
 export default function Problem() {
   const formRef = useRef(null);
+  const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [deliveryProblems, setDeliveryProblems] = useState([]);
   const [searchContext, setSearchContext] = useState('');
   const [currentDeliveryProblem, setCurrentDeliveryProblem] = useState({});
@@ -38,10 +41,13 @@ export default function Problem() {
 
   async function getDeliveryProblems(search) {
     const response = await api.get(
-      `/manage-deliveries?q=${search}&onlyWithProblem=true`
+      `/manage-deliveries?q=${search}&page=${currentPage}&onlyWithProblem=true`
     );
 
-    setDeliveryProblems(response.data);
+    const { pages, deliveries } = response.data;
+
+    setPages(pages);
+    setDeliveryProblems(deliveries);
   }
 
   async function deleteDeliveryProblem(deliveryProblemId) {
@@ -57,8 +63,13 @@ export default function Problem() {
   }
 
   useEffect(() => {
+    setCurrentPage(1);
     getDeliveryProblems(searchContext);
   }, [searchContext]);
+
+  useEffect(() => {
+    getDeliveryProblems(searchContext);
+  }, [currentPage]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -107,29 +118,38 @@ export default function Problem() {
         </Backdrop>
       )}
       <Container>
-        <Title>Problemas na entrega</Title>
-        <Action>
-          <SearchBox>
-            <StyledInput>
-              <Form ref={formRef} onSubmit={handleSubmit}>
-                <Input name="search" placeholder="Buscar por encomenda" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    formRef.current.reset();
-                    setSearchContext('');
-                  }}
-                >
-                  <MdClose />
-                </button>
-                <button type="submit">
-                  <MdSearch size={20} />
-                </button>
-              </Form>
-            </StyledInput>
-          </SearchBox>
-        </Action>
-        <Table headers={headers} rows={deliveryProblems} actions={actions} />
+        <div>
+          <Title>Problemas na entrega</Title>
+          <Action>
+            <SearchBox>
+              <StyledInput>
+                <Form ref={formRef} onSubmit={handleSubmit}>
+                  <Input name="search" placeholder="Buscar por encomenda" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      formRef.current.reset();
+                      setSearchContext('');
+                    }}
+                  >
+                    <MdClose />
+                  </button>
+                  <button type="submit">
+                    <MdSearch size={20} />
+                  </button>
+                </Form>
+              </StyledInput>
+            </SearchBox>
+          </Action>
+          <Table headers={headers} rows={deliveryProblems} actions={actions} />
+        </div>
+        {pages && (
+          <Pager
+            maxPages={pages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
       </Container>
     </>
   );

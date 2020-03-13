@@ -11,6 +11,10 @@ export default function Table({ headers, rows, actions }) {
       const joinedKeys = restOfKeys.join('.');
       const objectFirstKey = object[firstKey];
 
+      if (!objectFirstKey) {
+        return null;
+      }
+
       if (joinedKeys.includes('.')) {
         const nextObject = getObjectProperty(joinedKeys, objectFirstKey);
 
@@ -43,7 +47,10 @@ export default function Table({ headers, rows, actions }) {
                 {header.type === 'image' ? (
                   <>
                     <img
-                      src={getObjectProperty(header.key, row)}
+                      src={
+                        getObjectProperty(header.key, row) ||
+                        `https://api.adorable.io/avatars/150/${row.name}.png`
+                      }
                       alt={header.key}
                     />
                   </>

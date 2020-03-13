@@ -79,7 +79,9 @@ export default function ManageDeliveries({
     async function getRecipient() {
       const response = await api.get(`/manage-recipients?id=${id}`);
 
-      setRecipient(response.data[0]);
+      const { recipients } = response.data;
+
+      setRecipient(recipients[0]);
     }
 
     getRecipient();

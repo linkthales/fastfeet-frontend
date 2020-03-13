@@ -25,6 +25,7 @@ import {
   StyledInput,
   Button,
 } from './styles';
+import Pager from '~/components/Pager';
 
 const headers = [
   { key: 'id', name: 'ID' },
@@ -40,6 +41,8 @@ const headers = [
 export default function Delivery({ history }) {
   const formRef = useRef(null);
   const [deliveries, setDeliveries] = useState([]);
+  const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchContext, setSearchContext] = useState('');
   const [currentDelivery, setCurrentDelivery] = useState({});
   const [problemFlag, setProblemFlag] = useState(false);
@@ -47,12 +50,15 @@ export default function Delivery({ history }) {
 
   async function getDeliveries(search) {
     const response = await api.get(
-      `/manage-deliveries?q=${search}${
+      `/manage-deliveries?q=${search}&page=${currentPage}${
         problemFlag ? '&onlyWithProblem=true' : ''
       }`
     );
 
-    setDeliveries(response.data);
+    const { pages, deliveries } = response.data;
+
+    setPages(pages);
+    setDeliveries(deliveries);
   }
 
   async function deleteDelivery(deliveryId) {
@@ -68,8 +74,13 @@ export default function Delivery({ history }) {
   }
 
   useEffect(() => {
+    setCurrentPage(1);
     getDeliveries(searchContext);
   }, [searchContext, problemFlag]);
+
+  useEffect(() => {
+    getDeliveries(searchContext);
+  }, [currentPage]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -154,42 +165,51 @@ export default function Delivery({ history }) {
         </Backdrop>
       )}
       <Container>
-        <Title>Gerenciando encomendas</Title>
-        <Action>
-          <SearchBox>
-            <StyledInput>
-              <Form ref={formRef} onSubmit={handleSubmit}>
-                <Input name="search" placeholder="Buscar por encomendas" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    formRef.current.reset();
-                    setSearchContext('');
+        <div>
+          <Title>Gerenciando encomendas</Title>
+          <Action>
+            <SearchBox>
+              <StyledInput>
+                <Form ref={formRef} onSubmit={handleSubmit}>
+                  <Input name="search" placeholder="Buscar por encomendas" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      formRef.current.reset();
+                      setSearchContext('');
+                    }}
+                  >
+                    <MdClose />
+                  </button>
+                  <button type="submit">
+                    <MdSearch size={20} />
+                  </button>
+                </Form>
+              </StyledInput>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={problemFlag}
+                  onChange={() => {
+                    setProblemFlag(!problemFlag);
                   }}
-                >
-                  <MdClose />
-                </button>
-                <button type="submit">
-                  <MdSearch size={20} />
-                </button>
-              </Form>
-            </StyledInput>
-            <label>
-              <input
-                type="checkbox"
-                checked={problemFlag}
-                onChange={() => {
-                  setProblemFlag(!problemFlag);
-                }}
-              />
-              <span>Apenas com problemas na entrega</span>
-            </label>
-          </SearchBox>
-          <Button type="button" onClick={handleNewDelivery}>
-            <MdAdd size={24} /> Cadastrar
-          </Button>
-        </Action>
-        <Table headers={headers} rows={deliveries} actions={actions} />
+                />
+                <span>Apenas com problemas na entrega</span>
+              </label>
+            </SearchBox>
+            <Button type="button" onClick={handleNewDelivery}>
+              <MdAdd size={24} /> Cadastrar
+            </Button>
+          </Action>
+          <Table headers={headers} rows={deliveries} actions={actions} />
+        </div>
+        {pages && (
+          <Pager
+            maxPages={pages}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
       </Container>
     </>
   );

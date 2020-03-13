@@ -39,7 +39,7 @@ export default function Input({ name, label, mask, ...rest }) {
         <input
           id={fieldName}
           name={fieldName}
-          value={value}
+          defaultValue={value}
           ref={inputRef}
           onChange={({ target: { value } }) => setValue(value)}
           {...rest}

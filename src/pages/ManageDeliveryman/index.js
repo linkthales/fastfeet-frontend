@@ -57,7 +57,7 @@ export default function ManageDeliveryman({
 
       const errorObject = JSON.parse(err.request.response);
 
-      return toast.error(errorObject);
+      return toast.error(errorObject.error);
     }
   }
 

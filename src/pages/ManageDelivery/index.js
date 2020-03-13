@@ -65,23 +65,31 @@ export default function ManageDelivery({
 
       const errorObject = JSON.parse(err.request.response);
 
-      return toast.error(errorObject);
+      return toast.error(errorObject.error);
     }
   }
 
   async function getDeliverymans(search = '') {
-    const response = await api.get(`/manage-deliverymans?q=${search}`);
+    const response = await api.get(
+      `/manage-deliverymans?q=${search}&getAll=true`
+    );
 
-    return response.data.map(deliveryman => ({
+    const { deliverymans } = response.data;
+
+    return deliverymans.map(deliveryman => ({
       value: deliveryman.id,
       label: deliveryman.name,
     }));
   }
 
   async function getRecipients(search = '') {
-    const response = await api.get(`/manage-recipients?q=${search}`);
+    const response = await api.get(
+      `/manage-recipients?q=${search}&getAll=true`
+    );
 
-    return response.data.map(recipient => ({
+    const { recipients } = response.data;
+
+    return recipients.map(recipient => ({
       value: recipient.id,
       label: recipient.name,
     }));
@@ -91,9 +99,11 @@ export default function ManageDelivery({
     async function getData() {
       const response = await api.get(`/manage-deliveries?id=${id}`);
 
+      const { deliveries } = response.data;
+
       setDeliverymans(await getDeliverymans());
       setRecipients(await getRecipients());
-      setDelivery(response.data[0]);
+      setDelivery(deliveries[0]);
     }
 
     getData();

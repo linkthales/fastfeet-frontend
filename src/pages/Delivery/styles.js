@@ -37,6 +37,11 @@ export const BackdropContainer = styled.div`
 `;
 
 export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 85vh;
+
   max-width: 100%;
   width: 1200px;
   margin: 0 40px;

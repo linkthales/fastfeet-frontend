@@ -23,6 +23,7 @@ import {
   Button,
 } from './styles';
 import { blueColor, dangerColor } from '~/styles/colors';
+import Pager from '~/components/Pager';
 
 const headers = [
   { key: 'id', name: 'ID' },
@@ -33,13 +34,20 @@ const headers = [
 
 export default function Deliveryman({ history }) {
   const formRef = useRef(null);
+  const [pages, setPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [deliverymans, setDeliverymans] = useState([]);
   const [searchContext, setSearchContext] = useState('');
 
   async function getDeliverymans(search) {
-    const response = await api.get(`/manage-deliverymans?q=${search}`);
+    const response = await api.get(
+      `/manage-deliverymans?q=${search}&page=${currentPage}`
+    );
 
-    setDeliverymans(response.data);
+    const { pages, deliverymans } = response.data;
+
+    setPages(pages);
+    setDeliverymans(deliverymans);
   }
 
   async function deleteDeliveryman(deliverymanId) {
@@ -55,8 +63,13 @@ export default function Deliveryman({ history }) {
   }
 
   useEffect(() => {
+    setCurrentPage(1);
     getDeliverymans(searchContext);
   }, [searchContext]);
+
+  useEffect(() => {
+    getDeliverymans(searchContext);
+  }, [currentPage]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -87,32 +100,41 @@ export default function Deliveryman({ history }) {
 
   return (
     <Container>
-      <Title>Gerenciando entregadores</Title>
-      <Action>
-        <SearchBox>
-          <StyledInput>
-            <Form ref={formRef} onSubmit={handleSubmit}>
-              <Input name="search" placeholder="Buscar por entregadores" />
-              <button
-                type="button"
-                onClick={() => {
-                  formRef.current.reset();
-                  setSearchContext('');
-                }}
-              >
-                <MdClose />
-              </button>
-              <button type="submit">
-                <MdSearch size={20} />
-              </button>
-            </Form>
-          </StyledInput>
-        </SearchBox>
-        <Button type="button" onClick={handleNewDeliveryman}>
-          <MdAdd size={24} /> Cadastrar
-        </Button>
-      </Action>
-      <Table headers={headers} rows={deliverymans} actions={actions} />
+      <div>
+        <Title>Gerenciando entregadores</Title>
+        <Action>
+          <SearchBox>
+            <StyledInput>
+              <Form ref={formRef} onSubmit={handleSubmit}>
+                <Input name="search" placeholder="Buscar por entregadores" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    formRef.current.reset();
+                    setSearchContext('');
+                  }}
+                >
+                  <MdClose />
+                </button>
+                <button type="submit">
+                  <MdSearch size={20} />
+                </button>
+              </Form>
+            </StyledInput>
+          </SearchBox>
+          <Button type="button" onClick={handleNewDeliveryman}>
+            <MdAdd size={24} /> Cadastrar
+          </Button>
+        </Action>
+        <Table headers={headers} rows={deliverymans} actions={actions} />
+      </div>
+      {pages && (
+        <Pager
+          maxPages={pages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
     </Container>
   );
 }
