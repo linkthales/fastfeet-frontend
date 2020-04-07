@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import {
   MdClose,
   MdSearch,
@@ -23,11 +24,13 @@ import {
 import { blueColor, dangerColor } from '~/styles/colors';
 import Backdrop from '../_layouts/backdrop';
 import Pager from '~/components/Pager';
+import Confirmation from '~/components/Confirmation';
 
 const headers = [
   { key: 'id', name: 'Encomenda' },
   { key: 'product', name: 'Produto' },
   { key: 'last_problem.description', type: 'problem', name: 'Problema' },
+  { key: 'status', name: 'Status' },
 ];
 
 export default function Problem() {
@@ -38,27 +41,29 @@ export default function Problem() {
   const [searchContext, setSearchContext] = useState('');
   const [currentDeliveryProblem, setCurrentDeliveryProblem] = useState({});
   const [openModal, setOpenModal] = useState(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
   async function getDeliveryProblems(search) {
     const response = await api.get(
       `/manage-deliveries?q=${search}&page=${currentPage}&onlyWithProblem=true`
     );
 
-    const { pages, deliveries } = response.data;
+    const { pages: maxPages, deliveries } = response.data;
 
-    setPages(pages);
+    setPages(maxPages);
     setDeliveryProblems(deliveries);
   }
 
-  async function deleteDeliveryProblem(deliveryProblemId) {
-    if (
-      window.confirm(
-        `Tem certeza que deseja cancelar a encomenda de id ${deliveryProblemId}?`
-      )
-    ) {
-      await api.delete(`/manage-deliverymans/${deliveryProblemId}`);
+  async function deleteDeliveryProblem(deliveryProblem) {
+    try {
+      await api.delete(
+        `/manage-deliveries/${deliveryProblem.problems[0].id}/cancel-delivery`
+      );
 
       getDeliveryProblems(searchContext);
+      setOpenConfirmation(false);
+    } catch (err) {
+      toast.error(err.response.data.error);
     }
   }
 
@@ -94,13 +99,33 @@ export default function Problem() {
       icon: MdDeleteForever,
       color: dangerColor,
       execute: deliveryProblemId => {
-        deleteDeliveryProblem(deliveryProblemId);
+        const deliveryProblem = deliveryProblems.find(iDelivery => {
+          return iDelivery.id === deliveryProblemId;
+        });
+
+        setCurrentDeliveryProblem(deliveryProblem);
+        setOpenConfirmation(true);
       },
     },
   ];
 
   return (
     <>
+      {openConfirmation && (
+        <Backdrop
+          handleClose={() => {
+            setOpenConfirmation(false);
+          }}
+        >
+          <Confirmation
+            title="Cancelar encomenda"
+            message={`Deseja realmente cancelar a encomenda ${currentDeliveryProblem.product} de id = ${currentDeliveryProblem.id}?`}
+            confirmAction={() => setOpenConfirmation(false)}
+            cancelAction={() => deleteDeliveryProblem(currentDeliveryProblem)}
+          />
+        </Backdrop>
+      )}
+
       {openModal && (
         <Backdrop
           handleClose={() => {

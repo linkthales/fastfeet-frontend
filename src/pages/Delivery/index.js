@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import {
   MdClose,
   MdAdd,
@@ -7,6 +8,8 @@ import {
   MdEdit,
   MdDeleteForever,
 } from 'react-icons/md';
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 import { Form } from '@unform/web';
 import PropTypes from 'prop-types';
 
@@ -26,6 +29,7 @@ import {
   Button,
 } from './styles';
 import Pager from '~/components/Pager';
+import Confirmation from '~/components/Confirmation';
 
 const headers = [
   { key: 'id', name: 'ID' },
@@ -35,7 +39,7 @@ const headers = [
   { key: 'deliveryman.name', name: 'Entregador' },
   { key: 'recipient.city', name: 'Cidade' },
   { key: 'recipient.state', name: 'Estado' },
-  { key: 'recipient.street', name: 'Status' },
+  { key: 'status', name: 'Status' },
 ];
 
 export default function Delivery({ history }) {
@@ -47,6 +51,7 @@ export default function Delivery({ history }) {
   const [currentDelivery, setCurrentDelivery] = useState({});
   const [problemFlag, setProblemFlag] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
   async function getDeliveries(search) {
     const response = await api.get(
@@ -55,21 +60,20 @@ export default function Delivery({ history }) {
       }`
     );
 
-    const { pages, deliveries } = response.data;
+    const { pages: maxPages, deliveries: newDeliveries } = response.data;
 
-    setPages(pages);
-    setDeliveries(deliveries);
+    setPages(maxPages);
+    setDeliveries(newDeliveries);
   }
 
   async function deleteDelivery(deliveryId) {
-    if (
-      window.confirm(
-        `Tem certeza que deseja excluir a encomenda de id ${deliveryId}?`
-      )
-    ) {
+    try {
       await api.delete(`/manage-deliveries/${deliveryId}`);
 
       getDeliveries(searchContext);
+      setOpenConfirmation(false);
+    } catch (err) {
+      toast.error(err.response.data.error);
     }
   }
 
@@ -81,6 +85,30 @@ export default function Delivery({ history }) {
   useEffect(() => {
     getDeliveries(searchContext);
   }, [currentPage]);
+
+  const dates = useMemo(() => {
+    const startDate = currentDelivery.start_date
+      ? format(new Date(currentDelivery.start_date), 'dd/MM/yyyy', {
+          locale: pt,
+        })
+      : '- - / - - / - - - -';
+    const endDate = currentDelivery.end_date
+      ? format(new Date(currentDelivery.end_date), 'dd/MM/yyyy', {
+          locale: pt,
+        })
+      : '- - / - - / - - - -';
+    const cancelDate = currentDelivery.cancelled_at
+      ? format(new Date(currentDelivery.cancelled_at), 'dd/MM/yyyy', {
+          locale: pt,
+        })
+      : '- - / - - / - - - -';
+
+    return {
+      startDate,
+      endDate,
+      cancelDate,
+    };
+  }, [currentDelivery]);
 
   function handleSubmit({ search }) {
     setSearchContext(search);
@@ -117,13 +145,33 @@ export default function Delivery({ history }) {
       icon: MdDeleteForever,
       color: dangerColor,
       execute: deliveryId => {
-        deleteDelivery(deliveryId);
+        const delivery = deliveries.find(iDelivery => {
+          return iDelivery.id === deliveryId;
+        });
+
+        setCurrentDelivery(delivery);
+        setOpenConfirmation(true);
       },
     },
   ];
 
   return (
     <>
+      {openConfirmation && (
+        <Backdrop
+          handleClose={() => {
+            setOpenConfirmation(false);
+          }}
+        >
+          <Confirmation
+            title="Excluir encomenda"
+            message={`Deseja realmente excluir a encomenda ${currentDelivery.product} de id = ${currentDelivery.id}?`}
+            confirmAction={() => setOpenConfirmation(false)}
+            cancelAction={() => deleteDelivery(currentDelivery.id)}
+          />
+        </Backdrop>
+      )}
+
       {openModal && (
         <Backdrop
           handleClose={() => {
@@ -133,33 +181,45 @@ export default function Delivery({ history }) {
           <BackdropContainer>
             <div>
               <h3>Informações da encomenda</h3>
-              <p>
-                {currentDelivery.recipient.street},{' '}
-                {currentDelivery.recipient.street_number}
-              </p>
-              <p>
-                {currentDelivery.recipient.city} -{' '}
-                {currentDelivery.recipient.state}
-              </p>
-              <p>{currentDelivery.recipient.zip_code}</p>
+              {currentDelivery.recipient && (
+                <>
+                  <p>
+                    {currentDelivery.recipient.street},{' '}
+                    {currentDelivery.recipient.street_number}
+                  </p>
+                  <p>
+                    {currentDelivery.recipient.city} -{' '}
+                    {currentDelivery.recipient.state}
+                  </p>
+                  <p>{currentDelivery.recipient.zip_code}</p>
+                </>
+              )}
             </div>
 
             <div>
               <h3>Datas</h3>
               <p>
-                <strong>Retirada:</strong> {currentDelivery.start_date}
+                <strong>Retirada:</strong> {dates.startDate}
               </p>
-              <p>
-                <strong>Entrega:</strong> {currentDelivery.end_date}
-              </p>
+              {currentDelivery.cancelled_at ? (
+                <p>
+                  <strong>Cancelada:</strong> {dates.cancelDate}
+                </p>
+              ) : (
+                <p>
+                  <strong>Entrega:</strong> {dates.endDate}
+                </p>
+              )}
             </div>
 
             <div>
               <h3>Assinatura do destinatário</h3>
-              <img
-                src={currentDelivery.signature}
-                alt={currentDelivery.signature}
-              />
+              {currentDelivery.signature && (
+                <img
+                  src={currentDelivery.signature.url}
+                  alt={currentDelivery.signature.name}
+                />
+              )}
             </div>
           </BackdropContainer>
         </Backdrop>

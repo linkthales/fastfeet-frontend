@@ -22,7 +22,7 @@ export const Container = styled.div`
     position: relative;
     background: white;
 
-    button {
+    > button {
       position: absolute;
       top: 25px;
       right: 25px;

@@ -2,7 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Actions from '~/components/Actions';
-import { Container, Header, Row } from './styles';
+import { Container, Header, Row, Status, Ball } from './styles';
+import {
+  blueColor,
+  confirmationColor,
+  dangerColor,
+  warningColor,
+} from '~/styles/colors';
 
 export default function Table({ headers, rows, actions }) {
   function getObjectProperty(key, object) {
@@ -27,6 +33,26 @@ export default function Table({ headers, rows, actions }) {
     // if (Array.isArray(object[key])) return object[key];
 
     return object[key];
+  }
+
+  function getColor(delivery) {
+    return delivery.cancelled_at
+      ? dangerColor
+      : delivery.start_date && !delivery.end_date
+      ? blueColor
+      : delivery.end_date
+      ? confirmationColor
+      : warningColor;
+  }
+
+  function getText(delivery) {
+    return delivery.cancelled_at
+      ? 'CANCELADA'
+      : delivery.start_date && !delivery.end_date
+      ? 'RETIRADA'
+      : delivery.end_date
+      ? 'ENTREGUE'
+      : 'PENDENTE';
   }
 
   return (
@@ -54,6 +80,11 @@ export default function Table({ headers, rows, actions }) {
                       alt={header.key}
                     />
                   </>
+                ) : header.key === 'status' ? (
+                  <Status color={getColor(row)}>
+                    <Ball color={getColor(row)} />
+                    <p>{getText(row)}</p>
+                  </Status>
                 ) : (
                   <p>{getObjectProperty(header.key, row)}</p>
                 )}

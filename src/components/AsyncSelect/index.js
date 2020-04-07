@@ -61,7 +61,7 @@ export default function AsyncSelect({
         return reference.props.value.value;
       },
     });
-  }, [ref.current, fieldName]);
+  }, [fieldName]);
 
   return (
     <>

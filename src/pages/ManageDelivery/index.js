@@ -74,9 +74,9 @@ export default function ManageDelivery({
       `/manage-deliverymans?q=${search}&getAll=true`
     );
 
-    const { deliverymans } = response.data;
+    const { deliverymans: newDeliverymans } = response.data;
 
-    return deliverymans.map(deliveryman => ({
+    return newDeliverymans.map(deliveryman => ({
       value: deliveryman.id,
       label: deliveryman.name,
     }));
@@ -87,9 +87,9 @@ export default function ManageDelivery({
       `/manage-recipients?q=${search}&getAll=true`
     );
 
-    const { recipients } = response.data;
+    const { recipients: newRecipients } = response.data;
 
-    return recipients.map(recipient => ({
+    return newRecipients.map(recipient => ({
       value: recipient.id,
       label: recipient.name,
     }));

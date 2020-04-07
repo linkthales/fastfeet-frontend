@@ -46,7 +46,7 @@ export default function ManageDeliveries({
         city: Yup.string().required('A cidade é obrigatória'),
         state: Yup.string().required('O estado é obrigatório'),
         zip_code: Yup.string()
-          .matches(/^\d{5}\-\d{3}$/, 'O cep deve ter o formato 99999-999')
+          .matches(/^\d{5}-\d{3}$/, 'O cep deve ter o formato 99999-999')
           .required('O CEP é obrigatório'),
       });
       await schema.validate(data, {

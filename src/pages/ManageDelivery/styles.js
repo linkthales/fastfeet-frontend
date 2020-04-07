@@ -122,6 +122,11 @@ export const SelectBlock = styled.div`
     width: 405px;
   }
 
+  .react-select__placeholder,
+  .react-select__single-value {
+    top: 60%;
+  }
+
   .css-2b097c-container,
   .css-1pahdxg-control,
   .css-1pahdxg-control:hover {
